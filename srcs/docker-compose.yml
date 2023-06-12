@@ -10,6 +10,7 @@ services:
       - "443:443"
     networks:
       - frontend
+    restart: always
 
   mariadb:
     build:
@@ -20,6 +21,18 @@ services:
       - "3306:3306"
     networks:
       - backend
+    restart: always
+
+  wordpress:
+    build:
+      context: .
+      dockerfile: requirements/wordpress/Dockerfile
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    networks:
+      - backend
+    restart: always
 
 networks:
   frontend:
