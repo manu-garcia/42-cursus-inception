@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: requirements/nginx/Dockerfile
     container_name: nginx
+    depends_on:
+      - wordpress
     ports:
       - "443:443"
     networks:
@@ -16,6 +18,13 @@ services:
     build:
       context: .
       dockerfile: requirements/mariadb/Dockerfile
+      args:
+        - MYSQL_DB_NAME=${MYSQL_DB_NAME}
+        - MYSQL_DB_USER=${MYSQL_DB_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - .env
     container_name: mariadb
     ports:
       - "3306:3306"

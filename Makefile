@@ -3,29 +3,26 @@ name = inception
 all: up
 
 up:
-	@docker-compose -f ./srcs/docker-compose.yml up -d
+	@docker-compose --env-file ./srcs/.env -f ./srcs/docker-compose.yml up -d
 
 down:
-	@docker-compose -f ./srcs/docker-compose.yml down
-
-containers:
-	@docker container ls
-
-images:
-	@docker images
+	@docker-compose --env-file ./srcs/.env -f ./srcs/docker-compose.yml down
 
 clean: down
 
 re: clean all
 
 fclean: down
-	@docker stop $$(docker ps -qa)
-	@docker rmi $$(docker images -q)
-	@docker rm $$(docker ps -aq)
+	@if [ -n "$$(docker ps -qa)" ]; then docker stop $$(docker ps -qa); fi
+	@if [ -n "$$(docker images -q)" ]; then docker rmi $$(docker images -q) -f; fi
+	@if [ -n "$$(docker ps -aq)" ]; then docker rm $$(docker ps -aq) -f; fi
 	@docker system prune --all --force --volumes
 	@docker network prune --force
 	@docker volume prune --force
 	@sudo rm -rf ~/data/wordpress/*
 	@sudo rm -rf ~/data/mariadb/*
 
-.PHONY: all up down 
+sh_mariadb:
+	@docker exec -it mariadb sh
+
+.PHONY: all up down clean re fclean sh_mariadb
