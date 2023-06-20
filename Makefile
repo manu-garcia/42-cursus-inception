@@ -25,4 +25,17 @@ fclean: down
 sh_mariadb:
 	@docker exec -it mariadb sh
 
-.PHONY: all up down clean re fclean sh_mariadb
+logs:
+	@echo "nginx logs:"
+	@docker logs nginx
+	@echo ""
+
+	@echo "wordpress logs:"
+	@docker logs wordpress
+	@echo ""
+
+	@echo "mariadb logs:"
+	@docker logs mariadb
+	@echo ""
+
+.PHONY: all up down clean re fclean sh_mariadb logs

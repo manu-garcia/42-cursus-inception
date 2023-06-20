@@ -12,6 +12,8 @@ services:
       - "443:443"
     networks:
       - frontend
+    volumes:
+      - wordpress-volume:/var/www/
     restart: always
 
   mariadb:
@@ -29,22 +31,42 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - backend
+      - frontend
+    volumes:
+      - database-volume:/var/lib/mysql
     restart: always
 
   wordpress:
     build:
       context: .
       dockerfile: requirements/wordpress/Dockerfile
+      args:
+        - MYSQL_DB_NAME=${MYSQL_DB_NAME}
+        - MYSQL_DB_USER=${MYSQL_DB_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - DOMAIN_NAME=${DOMAIN_NAME}
+        - WORDPRESS_ADMIN_USER=${WORDPRESS_ADMIN_USER}
+        - WORDPRESS_ADMIN_PASSWORD=${WORDPRESS_ADMIN_PASSWORD}
+        - WORDPRESS_ADMIN_EMAIL=${WORDPRESS_ADMIN_EMAIL}
     container_name: wordpress
     depends_on:
       - mariadb
+    ports:
+      - "9000:9000"
     networks:
-      - backend
+      - frontend
+    volumes:
+      - wordpress-volume:/var/www/
     restart: always
 
 networks:
-  frontend:
-    driver: bridge
   backend:
     driver: bridge
+  frontend:
+    driver: bridge
+
+volumes:
+  database-volume:
+  wordpress-volume:
+
