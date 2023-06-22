@@ -3,13 +3,16 @@ name = inception
 all: up
 
 up:
-	# --build --force-recreate
+	@mkdir -p /home/${USER}/data/wordpress
+	@mkdir -p /home/${USER}/data/mariadb
 	@docker-compose --env-file ./srcs/.env -f ./srcs/docker-compose.yml up -d
 
 down:
 	@docker-compose --env-file ./srcs/.env -f ./srcs/docker-compose.yml down
 
 clean: down
+	rm -rf /home/${USER}/data/wordpress
+	rm -rf /home/${USER}/data/mariadb
 
 re: clean all
 
@@ -21,6 +24,9 @@ fclean: down
 	docker system prune --all --force --volumes
 	docker network prune --force
 	docker volume prune --force
+	rm -rf /home/${USER}/data/wordpress
+	rm -rf /home/${USER}/data/mariadb
+
 	@echo "fclean successfull"
 
 sh_mariadb:

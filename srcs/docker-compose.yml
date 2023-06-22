@@ -31,7 +31,7 @@ services:
     networks:
       - backend
     volumes:
-      - database-volume:/var/lib/mysql
+      - database-volume:/var/lib/mysql/
     restart: always
 
   wordpress:
@@ -65,5 +65,15 @@ networks:
 
 volumes:
   database-volume:
-  wordpress-volume:
+    driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: /home/${USER}/data/mariadb
 
+  wordpress-volume:
+    driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none 
+    #   device: /home/${USER}/data/wordpress
