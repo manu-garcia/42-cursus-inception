@@ -28,8 +28,6 @@ services:
     env_file:
       - .env
     container_name: mariadb
-    ports:
-      - "3306:3306"
     networks:
       - backend
     volumes:
@@ -52,8 +50,6 @@ services:
     container_name: wordpress
     depends_on:
       - mariadb
-    ports:
-      - "9000:9000"
     networks:
       - frontend
       - backend
