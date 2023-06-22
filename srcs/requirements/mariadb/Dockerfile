@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:3.17
 
 # Makes this env variables available in the container
 ARG MYSQL_DB_NAME
@@ -28,7 +28,7 @@ RUN sed -i "s|skip-networking|# skip-networking|g" /etc/my.cnf.d/mariadb-server.
 RUN sed -i "s|.*bind-address\s*=.*|bind-address=0.0.0.0|g" /etc/my.cnf.d/mariadb-server.cnf
 
 # Create the database
-COPY requirements/mariadb/scripts/create_database.sh .
+COPY requirements/mariadb/tools/create_database.sh .
 RUN sh create_database.sh && rm create_database.sh
 
 EXPOSE 3306

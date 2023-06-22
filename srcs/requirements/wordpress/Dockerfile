@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:3.17
 
 # Makes this env variables available in the container
 ARG MYSQL_DB_NAME
@@ -22,29 +22,29 @@ RUN echo "WORDPRESS_ADMIN_PASSWORD = $WORDPRESS_ADMIN_PASSWORD"
 
 # Install PHP, WordPress, and other required dependencies
 RUN	apk update && apk upgrade && apk add --no-cache  \
-    php8 \
-    php8-fpm \
-    php8-mysqli \
-    php8-json \
-    php8-openssl \
-    php8-curl \
-    php8-zlib \
-    php8-xml \
-    php8-phar \
-    php8-intl \
-    php8-dom \
-    php8-xmlreader \
-    php8-ctype \
-    php8-mbstring \
-    php8-gd \
-    php8-session \
-    php8-iconv \
-    php8-simplexml \
-    php8-tokenizer \
-    php8-xmlwriter \
-    php8-fileinfo \
-    php8-xmlreader \
-    php8-exif \
+    php81 \
+    php81-fpm \
+    php81-mysqli \
+    php81-json \
+    php81-openssl \
+    php81-curl \
+    php81-zlib \
+    php81-xml \
+    php81-phar \
+    php81-intl \
+    php81-dom \
+    php81-xmlreader \
+    php81-ctype \
+    php81-mbstring \
+    php81-gd \
+    php81-session \
+    php81-iconv \
+    php81-simplexml \
+    php81-tokenizer \
+    php81-xmlwriter \
+    php81-fileinfo \
+    php81-xmlreader \
+    php81-exif \
     curl \
     wget \
     unzip
@@ -65,7 +65,11 @@ ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /u
 RUN chmod +x /usr/local/bin/wp
 
 # Copy the custom PHP-FPM configuration
-# COPY php-fpm.conf /etc/php8/php-fpm.conf
+# COPY php-fpm.conf /etc/php81/php-fpm.conf
+RUN sed -i "s|listen = 127.0.0.1:9000|listen = 9000|g" /etc/php81/php-fpm.d/www.conf && \
+    sed -i "s|;listen.owner = nobody|listen.owner = nobody|g" /etc/php81/php-fpm.d/www.conf && \
+    sed -i "s|;listen.group = nobody|listen.group = nobody|g" /etc/php81/php-fpm.d/www.conf && \
+    rm -f /var/cache/apk/*
 
 # Creates wordpress configuration
 WORKDIR /var/www/wordpress
@@ -73,8 +77,7 @@ RUN cp ./wp-config-sample.php ./wp-config.php
 RUN sed -i "s|database_name_here|$MYSQL_DB_NAME|g" ./wp-config.php && \
     sed -i "s|username_here|$MYSQL_DB_USER|g" ./wp-config.php && \
     sed -i "s|localhost|mariadb|g" ./wp-config.php && \
-    sed -i "s|password_here|$MYSQL_ROOT_PASSWORD|g" ./wp-config.php
-
+    sed -i "s|password_here|$MYSQL_PASSWORD|g" ./wp-config.php
 
 COPY ./requirements/wordpress/tools/install.sh .
 RUN chmod +x install.sh && \
@@ -84,8 +87,7 @@ RUN chmod +x install.sh && \
     sed -i "s|wordpress_admin_email_here|$WORDPRESS_ADMIN_EMAIL|g" install.sh
 
 # Expose the communication port
-# netstat -tulpn | grep LISTEN
 EXPOSE 9000
 
 # Start PHP-FPM
-CMD ["sh", "-c", "./install.sh && /usr/sbin/php-fpm8 -F"]
+CMD ["sh", "-c", "./install.sh && /usr/sbin/php-fpm81 -F"]
